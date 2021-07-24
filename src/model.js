@@ -1,16 +1,18 @@
+const tf = require('@tensorflow/tfjs');
+
 class FederatedModel {
     constructor() {
-        this.model = this.modelBuilder;
+        this.model = this.modelBuilder();
     }
 
     // given input set of weights that fit in the model, load the weights into this.model
-    loadWeights(weights) {
-
+    setWeights(weights) {
+        return this.model.setWeights(weights);
     }
 
     // return weights of the model in some standard format
     getWeights() {
-
+        return this.model.getWeights();
     }
 
     // pre-designed model from: https://codelabs.developers.google.com/codelabs/tfjs-training-classfication/index.html#4
@@ -76,3 +78,5 @@ class FederatedModel {
         return model;
     }
 }
+
+module.exports = FederatedModel;
