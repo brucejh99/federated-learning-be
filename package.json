@@ -12,5 +12,8 @@
   "dependencies": {
     "@tensorflow/tfjs": "^3.8.0",
     "express": "^4.17.1"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }
