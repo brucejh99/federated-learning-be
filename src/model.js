@@ -6,8 +6,9 @@ class FederatedModel {
     }
 
     // given input set of weights that fit in the model, load the weights into this.model
-    setWeights(weights) {
-        return this.model.setWeights(weights);
+    setWeights(updatedWeights) {
+        console.log(updatedWeights);
+        this.model.setWeights(updatedWeights);
     }
 
     // return weights of the model in some standard format
