@@ -1,5 +1,5 @@
-const { request } = require('express');
 const express = require('express')
+const tf = require('@tensorflow/tfjs');
 const app = express();
 const port = process.env.PORT || 4200;
 
@@ -26,13 +26,18 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
+app.get('/get-weights', async (req, res) => {
+  let result = await federatedModel.model.save(tf.io.withSaveHandler(async modelArtifacts => modelArtifacts));
+  result.weightData = Buffer.from(result.weightData).toString("base64");
+  const jsonStr = JSON.stringify(result);
+  res.status(200).send({ model: jsonStr });
 });
 
-app.post('/trained-weights', (req, res) => {
-  const updatedWeights = JSON.parse(req.body.weights);
-  federatedModel.setWeights(updatedWeights);
+app.post('/trained-weights', async (req, res) => {
+  const json = JSON.parse(req.body.model);
+  const weightData = new Uint8Array(Buffer.from(json.weightData, "base64")).buffer;
+  const model = await tf.loadLayersModel(tf.io.fromMemory(json.modelTopology, json.weightSpecs, weightData));
+  federatedModel.setWeights(model.getWeights());
 
   res.status(200).send('OK');
   // try {

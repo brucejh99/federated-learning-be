@@ -5,9 +5,9 @@ class FederatedModel {
         this.model = this.modelBuilder();
     }
 
+    // TODO: try creating hdf5 file and sending
     // given input set of weights that fit in the model, load the weights into this.model
     setWeights(updatedWeights) {
-        console.log(updatedWeights);
         this.model.setWeights(updatedWeights);
     }
 
@@ -29,12 +29,12 @@ class FederatedModel {
         // to specify the input shape. Then we specify some parameters for 
         // the convolution operation that takes place in this layer.
         model.add(tf.layers.conv2d({
-        inputShape: [IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS],
-        kernelSize: 5,
-        filters: 8,
-        strides: 1,
-        activation: 'relu',
-        kernelInitializer: 'varianceScaling'
+            inputShape: [IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS],
+            kernelSize: 5,
+            filters: 8,
+            strides: 1,
+            activation: 'relu',
+            kernelInitializer: 'varianceScaling'
         }));
     
         // The MaxPooling layer acts as a sort of downsampling using max values
@@ -44,11 +44,11 @@ class FederatedModel {
         // Repeat another conv2d + maxPooling stack. 
         // Note that we have more filters in the convolution.
         model.add(tf.layers.conv2d({
-        kernelSize: 5,
-        filters: 16,
-        strides: 1,
-        activation: 'relu',
-        kernelInitializer: 'varianceScaling'
+            kernelSize: 5,
+            filters: 16,
+            strides: 1,
+            activation: 'relu',
+            kernelInitializer: 'varianceScaling'
         }));
         model.add(tf.layers.maxPooling2d({poolSize: [2, 2], strides: [2, 2]}));
         
@@ -61,9 +61,9 @@ class FederatedModel {
         // output class (i.e. 0, 1, 2, 3, 4, 5, 6, 7, 8, 9).
         const NUM_OUTPUT_CLASSES = 10;
         model.add(tf.layers.dense({
-        units: NUM_OUTPUT_CLASSES,
-        kernelInitializer: 'varianceScaling',
-        activation: 'softmax'
+            units: NUM_OUTPUT_CLASSES,
+            kernelInitializer: 'varianceScaling',
+            activation: 'softmax'
         }));
     
         
@@ -71,9 +71,9 @@ class FederatedModel {
         // then compile and return the model
         const optimizer = tf.train.adam();
         model.compile({
-        optimizer: optimizer,
-        loss: 'categoricalCrossentropy',
-        metrics: ['accuracy'],
+            optimizer: optimizer,
+            loss: 'categoricalCrossentropy',
+            metrics: ['accuracy'],
         });
     
         return model;
