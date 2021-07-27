@@ -16,6 +16,26 @@ class FederatedModel {
         return this.model.getWeights();
     }
 
+    // functions for federated learning aggregation according to the function defined in the article:
+    // https://towardsdatascience.com/federated-learning-a-step-by-step-implementation-in-tensorflow-aac568283399
+    // we assume weights, loss and batch size are equal (which they are as they are negligibly small for our case)
+    async federatedAggregation(clientModels) {
+        console.log('aggregating weights');
+        this.model.layers.forEach((layer, i) => {
+            if (layer._trainableWeights.length === 2) {
+                const clientLayers = Object.values(clientModels).map(model => model.layers[i].getWeights());
+                const kernels = clientLayers.map(clientLayer => clientLayer[0]);
+                const biases = clientLayers.map(clientLayer => clientLayer[1]);
+                const averageLayers = tf.layers.average();
+                const averageKernel = averageLayers.apply(kernels);
+                const averageBias = averageLayers.apply(biases);
+                layer.setWeights([averageKernel, averageBias]);
+            }
+        });
+
+        console.log('done aggregating weights');
+    }
+
     // pre-designed model from: https://codelabs.developers.google.com/codelabs/tfjs-training-classfication/index.html#4
     // TODO: see if we need to update IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS, etc. Keep the citation above.
     modelBuilder() {

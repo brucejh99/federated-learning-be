@@ -33,26 +33,34 @@ app.get('/get-weights', async (req, res) => {
   res.status(200).send({ model: jsonStr });
 });
 
-app.post('/trained-weights', async (req, res) => {
-  const json = JSON.parse(req.body.model);
-  const weightData = new Uint8Array(Buffer.from(json.weightData, "base64")).buffer;
-  const model = await tf.loadLayersModel(tf.io.fromMemory(json.modelTopology, json.weightSpecs, weightData));
-  federatedModel.setWeights(model.getWeights());
+app.post('/aggregate-weights', async (req, res) => {
+  try {
+    const clientNum = req.body.client;
+    const json = JSON.parse(req.body.model);
+    const weightData = new Uint8Array(Buffer.from(json.weightData, "base64")).buffer;
+    const model = await tf.loadLayersModel(tf.io.fromMemory(json.modelTopology, json.weightSpecs, weightData));
+    
+    let updatedSet;
+    for (const currKey of Object.keys(trainedWeights)) {
+      if (trainedWeights[currKey][`client${clientNum}`] === undefined) {
+        updatedSet = currKey;
+        trainedWeights[currKey][`client${clientNum}`] = model;
+        break;
+      }
+    }
 
-  res.status(200).send('OK');
-  // try {
-  //   const clientNum = req.body.client
-  //   const setNum = req.body.set
-  //   const weights = req.body.weights
-  //   const setKey = "set" + setNum
-  //   trainedWeights[setKey][clientNum] = weights
-  //   if (Object.keys(trainedWeights[setKey]).length === 6) {
-  //     // aggregate weights here 
-  //   }
-  //   res.status(200).send("OK")
-  // } catch (error) {
-  //   res.status(500).send(error)
-  // }
+    console.log(updatedSet, Object.keys(trainedWeights[updatedSet]));
+    if (updatedSet && Object.keys(trainedWeights[updatedSet]).length === 2) {
+      console.log('calling federated aggregation');
+      federatedModel.federatedAggregation(trainedWeights[updatedSet]);
+      console.log('federated aggregation call done and new weights saved');
+    }
+    
+    res.status(200).send("OK")
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error)
+  }
 });
 
 app.listen(port, () => {
