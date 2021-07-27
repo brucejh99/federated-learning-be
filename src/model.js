@@ -17,7 +17,7 @@ class FederatedModel {
     }
 
     // function for simple federated learning aggregation by taking the average of all weights
-    // so, we assume loss, batch size, etc. are negligibly small which should be the case for this model
+    // so, we assume loss, batch size, etc. are negligibly small
     async federatedAggregation(clientModels) {
         console.log('aggregating weights');
         this.model.layers.forEach((layer, i) => {
