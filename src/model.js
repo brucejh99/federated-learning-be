@@ -16,9 +16,8 @@ class FederatedModel {
         return this.model.getWeights();
     }
 
-    // functions for federated learning aggregation according to the function defined in the article:
-    // https://towardsdatascience.com/federated-learning-a-step-by-step-implementation-in-tensorflow-aac568283399
-    // we assume weights, loss and batch size are equal (which they are as they are negligibly small for our case)
+    // function for simple federated learning aggregation by taking the average of all weights
+    // so, we assume loss, batch size, etc. are negligibly small which should be the case for this model
     async federatedAggregation(clientModels) {
         console.log('aggregating weights');
         this.model.layers.forEach((layer, i) => {
