@@ -49,7 +49,7 @@ app.post('/aggregate-weights', async (req, res) => {
       }
     }
 
-    if (updatedSet && Object.keys(trainedWeights[updatedSet]).length === 2) {
+    if (updatedSet && Object.keys(trainedWeights[updatedSet]).length === 6) {
       console.log('calling federated aggregation');
       federatedModel.federatedAggregation(trainedWeights[updatedSet]);
       console.log('federated aggregation call done and new weights saved');
